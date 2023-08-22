@@ -50,6 +50,8 @@ spec:
                   - |
                     cp -r /app/. /var/www/html
                     chmod -R 777 /var/www/html/
+                    cd /var/www/html/
+                    npm run dev
           resources:
             requests:
               memory: "256Mi"
