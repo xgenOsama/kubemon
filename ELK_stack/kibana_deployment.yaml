@@ -25,10 +25,24 @@ spec:
         env:
           - name: ELASTICSEARCH_URL
             value: http://elasticsearch:9200
+          - name: ELASTICSEARCH_USERNAME
+            value: "elastic"
+          - name: ELASTICSEARCH_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: elastic-credentials
+                key: ELASTIC_PASSWORD     
+        volumeMounts:
+            - name: kibana-certificates
+              mountPath: /usr/share/kibana/config/certs
         ports:
         - containerPort: 5601
           name: ui
           protocol: TCP
+      volumes:
+        - name: kibana-certificates
+          secret:
+            secretName: kibana-certificate-pem
 ---
 apiVersion: v1
 kind: Service

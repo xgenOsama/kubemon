@@ -42,9 +42,15 @@ data:
         elasticsearch {
             hosts => "elasticsearch:9200"
             template_overwrite => false
+            user => "elastic"
+            password => "STRONG-PASSWORD"
             manage_template => false
             # The events will be stored in elasticsearch under previously defined index_prefix value.  
             index => "%{[@metadata][index_prefix]}"
             sniffing => false
+            keystore => "/usr/share/logstash/config/certs/elastic-certificates.p12"
+            keystore_password => ""
+            ilm_enabled => false
+            manage_template => false
         }
       }

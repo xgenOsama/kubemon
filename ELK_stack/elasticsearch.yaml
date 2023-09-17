@@ -33,6 +33,11 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /usr/share/elasticsearch/data
+        - name: elasticsearch-yml
+          mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
+          subPath: elasticsearch.yml
+        - name: elastic-certificates
+          mountPath: /usr/share/elasticsearch/config/certs
         env:
           - name: cluster.name
             value: k8s-logs
@@ -40,14 +45,54 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.name
+          - name: NODE_MASTER
+            valueFrom:
+              configMapKeyRef:
+                name: elasticsearch-config
+                key: NODE_MASTER
+          - name: NODE_DATA
+            valueFrom:
+              configMapKeyRef:
+                name: elasticsearch-config
+                key: NODE_DATA
+          - name: NUMBER_OF_MASTERS
+            valueFrom:
+              configMapKeyRef:
+                name: elasticsearch-config
+                key: NUMBER_OF_MASTERS
+          - name: NUMBER_OF_REPLICAS
+            valueFrom:
+              configMapKeyRef:
+                name: elasticsearch-config
+                key: NUMBER_OF_REPLICAS
+          - name: ES_JAVA_OPTS
+            valueFrom:
+              configMapKeyRef:
+                name: elasticsearch-config
+                key: ES_JAVA_OPTS
+          - name: ES_PORT
+            value: "9200"
+          - name: ELASTIC_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: elastic-credentials
+                key: ELASTIC_PASSWORD
           # sets a list of master-eligible nodes in the cluster.
           - name: discovery.seed_hosts
             value: "es-cluster-0.elasticsearch, es-cluster-1.elasticsearch,es-cluster-2.elasticsearch"
           # specifies a list of master-eligible nodes that will participate in the master election process.
           - name: cluster.initial_master_nodes
             value: "es-cluster-0,es-cluster-1,es-cluster-2"
-          - name: ES_JAVA_OPTS
-            value: "-Xms1g -Xmx1g"
+      volumes:
+      - name: elasticsearch-yml
+        configMap:
+          name: elasticsearch-config
+          items:
+            - key: elasticsearch.yml
+              path: elasticsearch.yml
+      - name: elastic-certificates
+        secret:
+          secretName: elastic-certificate-pem
       # Each init containers run to completion in the specified order.
       initContainers:
       # By default k8s mounts the data directory as root, which renders it inaccessible to Elasticsearch.
@@ -56,6 +101,7 @@ spec:
         command: ["sh", "-c", "chown -R 1000:1000 /usr/share/elasticsearch/data"]
         securityContext:
           privileged: true
+          runAsUser: 0
         volumeMounts:
         - name: data
           mountPath: /usr/share/elasticsearch/data
@@ -65,12 +111,14 @@ spec:
         command: ["sysctl", "-w", "vm.max_map_count=262144"]
         securityContext:
           privileged: true
+          runAsUser: 0
       # Increase the max number of open file descriptors. 
       - name: increase-fd-ulimit
         image: busybox
         command: ["sh", "-c", "ulimit -n 65536"]
         securityContext:
           privileged: true
+          runAsUser: 0
   # PersistentVolumes for the Elasticsearch pods.
   volumeClaimTemplates:
   - metadata:

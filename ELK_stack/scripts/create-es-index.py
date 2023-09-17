@@ -1,6 +1,6 @@
 from datetime import datetime
 from elasticsearch7 import Elasticsearch
-es = Elasticsearch("http://localhost:9200")
+es = Elasticsearch("http://localhost:9200",http_auth=('elastic', 'STRONG-PASSWORD'))
 
 doc = {
     'author': 'osama',

@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: elasticsearch-config
+data:
+  elasticsearch.yml: |
+    cluster.name: "es-cluster"
+    bootstrap.memory_lock: false
+    xpack.license.self_generated.type: basic
+    xpack.security.enabled: true
+    xpack.security.transport.ssl.enabled: true
+    xpack.security.transport.ssl.verification_mode: certificate
+    xpack.security.transport.ssl.keystore.path: /usr/share/elasticsearch/config/certs/elastic-certificates.p12
+    xpack.security.transport.ssl.truststore.path: /usr/share/elasticsearch/config/certs/elastic-certificates.p12
+    xpack.security.http.ssl.enabled: false
+    xpack.security.http.ssl.truststore.path: /usr/share/elasticsearch/config/certs/elastic-certificates.p12
+    xpack.security.http.ssl.keystore.path: /usr/share/elasticsearch/config/certs/elastic-certificates.p12
+    network.host: "0.0.0.0"
+    logger.org.elasticsearch.transport: error
+    logger.org.elasticsearch.discovery: error
+    discovery.seed_hosts:
+       - es-cluster-0.default.elasticsearch.svc.cluster.local:9300
+       - es-cluster-1.default.elasticsearch.svc.cluster.local:9300
+       - es-cluster-2.default.elasticsearch.svc.cluster.local:9300
+    cluster.initial_master_nodes:
+       - es-cluster-0
+       - es-cluster-1
+       - es-cluster-2
+  NODE_MASTER: "true"
+  NODE_DATA: "true"
+  NUMBER_OF_MASTERS: "3"
+  NUMBER_OF_REPLICAS: "2"
+  ES_JAVA_OPTS: "-Xms1g -Xmx1g"

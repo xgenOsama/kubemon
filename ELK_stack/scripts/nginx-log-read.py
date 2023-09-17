@@ -4,7 +4,7 @@ import pandas as pd
 from datetime import datetime
 from elasticsearch7 import Elasticsearch
 import uuid
-es = Elasticsearch("http://localhost:9200")
+es = Elasticsearch("http://localhost:9200",http_auth=('elastic', 'STRONG-PASSWORD'))
 
 class Parser:
     IP = 0
