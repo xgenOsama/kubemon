@@ -5,13 +5,13 @@ query = {
 "bool": {
     "must": {
     "match": {      
-        "host.name": "docker-desktop"
+        "status_code": "304"
     }
     }
 }
 }
 
-resp = es.search(index="nginx-logs-*", query=query)
+resp = es.search(index="python-nginx-index", query=query)
 
 # iterate the nested dictionaries inside the ["hits"]["hits"] list
 for num, doc in enumerate(resp['hits']['hits']):

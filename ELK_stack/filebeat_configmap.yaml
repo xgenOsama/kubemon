@@ -12,7 +12,7 @@ data:
       enabled: true
       paths:
         - /var/log/containers/*.log
-        - /var/lib/docker/containers/**/*.log
+        # - /var/lib/docker/containers/**/*.log
       # If you setup helm for your cluster and want to investigate its logs, comment out this section.
       exclude_files: ['tiller-deploy-*']
 
@@ -37,6 +37,13 @@ data:
       fields_under_root: true
       fields:
         index_prefix: nginx-logs
+    - type: log
+      enabled: true
+      paths:
+        - /var/log/dvwa/**/*.log
+      fields_under_root: true
+      fields:
+        index_prefix: dvwa-logs
     # Send events to Logstash.
     output.logstash:
       enabled: true

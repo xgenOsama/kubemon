@@ -52,6 +52,8 @@ spec:
           readOnly: true
         - name: log-data-nginx
           mountPath: /var/log/nginx
+        - name: log-data-nginx
+          mountPath: /var/log/dvwa
       volumes:
       # Bind previously defined ConfigMap
       - name: config
@@ -72,3 +74,6 @@ spec:
       - name: log-data-nginx
         persistentVolumeClaim:
           claimName: 'log-data-nginx'
+      - name: log-data-dvwa
+        persistentVolumeClaim:
+          claimName: 'log-data-dvwa'
