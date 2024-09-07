@@ -52,7 +52,7 @@ kubectl port-forward svc/grafana 8080:80
 kubectl apply -f ./
 helm upgrade prometheus prometheus-community/prometheus --set server.persistentVolume.enabled=true --set server.persistentVolume.storageClass=local-storage --set server.persistentVolume.existingClaim=prometheus-pvc 
 helm upgrade grafana grafana/grafana --set persistence.enabled=true,persistence.storageClassName="local-storage",persistence.existingClaim="grafana-pvc" 
-
-
+kubectl run nginx-pod --image=nginx --restart=Never --port=80 -n default
+kubectl expose pod nginx-pod --type=NodePort --port=80 --name=nginx-service
 
 ```
