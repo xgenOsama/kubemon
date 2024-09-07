@@ -1,2 +1,4 @@
 jenkins/storage
 app/db
+prometheus/gravana_storage
+prometheus/prometheus_storage

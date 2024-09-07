@@ -28,6 +28,31 @@ prom-operator
 - Re-install with:
     ```
     helm install prometheus prometheus-community/kube-prometheus-stack --set prometheus-node-exporter.hostRootFsMount=false
+    kubectl patch ds prometheus-prometheus-node-exporter --type "json" -p '[{"op": "remove", "path" : "/spec/template/spec/containers/0/volumeMounts/2/mountPropagation"}]'
     ```
+
+```
+
+
+```
+helm search hub Prometheus
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+helm install prometheus prometheus-community/prometheus
+kubectl patch ds prometheus-prometheus-node-exporter --type "json" -p '[{"op": "remove", "path" : "/spec/template/spec/containers/0/volumeMounts/2/mountPropagation"}]'
+kubectl get service
+kubectl port-forward svc/prometheus-server 9090:80
+helm search hub grafana
+helm repo add grafana https://grafana.github.io/helm-charts 
+helm repo update
+helm install grafana grafana/grafana
+kubectl get secret --namespace default grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+kubectl get service
+kubectl port-forward svc/grafana 8080:80
+kubectl apply -f ./
+helm upgrade prometheus prometheus-community/prometheus --set server.persistentVolume.enabled=true --set server.persistentVolume.storageClass=local-storage --set server.persistentVolume.existingClaim=prometheus-pvc 
+helm upgrade grafana grafana/grafana --set persistence.enabled=true,persistence.storageClassName="local-storage",persistence.existingClaim="grafana-pvc" 
+
+
 
 ```
